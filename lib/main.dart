@@ -1,101 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:online_shop/screens/products.dart';
-import 'package:online_shop/screens/userProfile.dart';
-import 'package:online_shop/screens/productsCart.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:online_shop/pages/catalog.dart';
+import 'package:online_shop/pages/cart.dart';
+import 'package:online_shop/pages/profile.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Cookies from Elton',
+      title: 'Flutter Hello World',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        brightness: Brightness.light,
+        accentColor: Colors.deepOrange,
+        primaryColor: Colors.brown,
+        //primarySwatch: Colors.pink,
       ),
-      home: PageNavigationBar(),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class PageNavigationBar extends StatefulWidget {
-  final List<Page> _pages = [
-    Page('Каталог', Icons.view_list, ProductsScreen()),
-    Page('Профиль', Icons.account_box, ProfileScreen()),
-    Page('Корзина', Icons.add_shopping_cart, ProductsCart()),
-  ];
-
-
-  PageNavigationBar({Key key}) : super(key: key);
-
-  @override
-  _PageNavigationBarState createState() => _PageNavigationBarState();
-}
-
-class _PageNavigationBarState extends State<PageNavigationBar> {
-  int _currentPageIndex = 0;
-
-  void _openPage(int index) {
-    setState(() {
-      _currentPageIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> drawerItemWidgets = widget._pages
-        .asMap()
-        .map((int index, Page page) =>
-        MapEntry<int, Widget>(index,
-            ListTile(
-              title: Text(page.title),
-              leading: Icon(page.iconData),
-              selected: _currentPageIndex == index,
-              onTap: () {
-                _openPage(index);
-                Navigator.pop(context);
-              },
-            )
-        )
-    ).values.toList();
-    drawerItemWidgets.insert(0, DrawerHeader(
-      child:Text('Cookies from Elton\n'),
-    ),);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Cookies from Elton"),
-        backgroundColor: Colors.brown,
-      
-      ),
-      body: Center(
-        child: (widget._pages[_currentPageIndex].pageBody),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: drawerItemWidgets,
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentPageIndex,
-        items: widget._pages.map((Page page) =>
-            BottomNavigationBarItem(
-              icon: Icon(page.iconData),
-              title: Text(page.title),
-            )).toList(),
-        onTap: _openPage,
-      ),);
-  }
-}
-
-class Page {
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
-  final IconData iconData;
-  final Widget pageBody;
-  Page(this.title, this.iconData, this.pageBody);
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
+class _MyHomePageState extends State<MyHomePage>{
+    var _currentIndex = 0;
+
+    @override
+    Widget build(BuildContext context) {
+    return Scaffold(
+        body: IndexedStack(
+            index: _currentIndex,
+            children: [Catalog(), Profile(), Cart()], 
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+            onTap: (selectedIndex){
+                setState(() {
+                    _currentIndex = selectedIndex;
+                });
+            },
+            currentIndex: _currentIndex, 
+            items: [
+              BottomNavigationBarItem(icon: Icon(Icons.list), title: Text("Каталог")),
+              BottomNavigationBarItem(icon: Icon(Icons.person), title: Text("Профиль")),
+              BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), title: Text("Корзина"))
+            ],
+        ),
+    );
+  }
+}
